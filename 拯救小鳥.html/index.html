@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            overflow: hidden;
+            background-color: rgb(219, 245, 248);
+
+        }
+
+        #game {
+            width: 1203px;
+            height: 600px;
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            background: url(./background.png) no-repeat center/cover;
+
+        }
+
+        #text {
+            width: 10%;
+            border: 1px solid black;
+            border-radius: 1rem;
+            background-color: rgb(240, 248, 245);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: auto;
+        }
+
+        #game img {
+            height: 70px;
+            position: absolute;
+        }
+
+        #text-area {
+            position: absolute;
+            top: 80%;
+            left: 10%;
+            color: rgb(79, 79, 179);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="game">
+    </div>
+    <br>
+    <div id="text">
+        <input type="button" value="遊戲開始" id="btn-start">
+        <p>分數: <span id="text-score">0</span></p>
+        <p>剩餘: <span id="text-time">0</span> 秒</p>
+    </div>
+    <div id="text-area">
+        <p>請把小雞接起來，不要讓他掉落在地上喔!</p>
+    </div>
+    <script src="../jquery-3.6.0.min.js"></script>
+    <script>
+        let score = 0
+        let countdown = 30
+        let timer = 0
+        let x = false
+        const move = (birds) => {
+            birds.stop().animate({
+                //    left:Math.round(Math.random() * 70 )+ '%',
+                top: 100 + '%'
+            }, 5000, function () {
+                clearInterval(timer)
+                $('#game img').stop().remove()
+                $('#btn-start').attr('disabled', false)
+                if (!x) {
+                    alert('拯救失敗，QQ')
+                    x = true
+
+                }
+            })
+
+
+
+        }
+
+
+        $('#btn-start').click(function () {
+            $(this).attr('disabled', true)
+
+            //重設
+            x = false
+            score = 0
+            $('#text-score').text(score)
+            countdown = 30
+            $('#text-time').text(countdown)
+
+            timer = setInterval(() => {
+                //倒數
+                countdown--
+                $('#text-time').text(countdown)
+
+                // 隨機產生
+                let rand = Math.round(Math.random() * 20)
+                if (rand > 5 && $('#game img').length < 20) {
+                    const birds = $(`<img src="./bird.gif" alt="" style="left:${Math.round(Math.random() * 90)}%;top:${Math.round(Math.random() * 5)}%">`)
+                    $('#game').append(birds)
+                    move(birds)
+                }
+
+                // 時間到
+                if (countdown <= 0) {
+                    clearInterval(timer)
+                    alert('時間到')
+                    $('#game img').remove()
+                    $('text-score').remove()
+                    $(this).attr('disabled', false)
+                }
+            }, 1000);
+        })
+
+        $('#game').on('click', 'img', function () {
+            $(this).attr('src', './pig.gif')
+            $(this).stop()
+            $(this).animate({ top: '-=200px' }).fadeOut('slow')
+            //忽略點擊事件、無法點擊和選取
+            $(this).css({
+                'user-select': 'none',
+                '-webkit-user-drag': 'none',
+                'pointer-events': 'none'
+            })
+
+            score++
+            $('#text-score').text(score)
+        })
+
+
+    </script>
+</body>
+
+</html>
